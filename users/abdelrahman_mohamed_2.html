@@ -77,7 +77,7 @@
       margin: 1rem 0;
       font-size: 0.9rem;
     }
-    .email-link {
+    .email-link, .whatsapp-link, .reveal-contacts {
       display: inline-block;
       background: #6b48ff;
       color: white;
@@ -85,11 +85,29 @@
       border-radius: 25px;
       text-decoration: none;
       font-weight: 600;
-      margin-top: 1rem;
+      margin: 0.5rem;
       transition: background 0.3s ease;
     }
-    .email-link:hover {
+    .email-link:hover, .whatsapp-link:hover, .reveal-contacts:hover {
       background: #5439cc;
+    }
+    .whatsapp-link::before {
+      content: '📱';
+      margin-right: 0.5rem;
+    }
+    .reveal-contacts::before {
+      content: '🔒';
+      margin-right: 0.5rem;
+    }
+    .contacts {
+      display: none;
+    }
+    .error-message {
+      color: #d32f2f;
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0.5rem 0;
+      display: none;
     }
     #scanStatus {
       font-size: 0.9rem;
@@ -111,6 +129,10 @@
       p {
         font-size: 0.9rem;
       }
+      .email-link, .whatsapp-link, .reveal-contacts {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
@@ -123,9 +145,66 @@
     <div class="verified">Verified Upnormal Member</div>
     <div class="token">The Brand Owner</div>
     <p>"Brilliantly quirky? Endlessly curious? IQ 120+? Join Upnormal, the community where bold, brainy trailblazers unite! Unleash your unique genius with us!"</p>
-    <p><a href="mailto:abdelrahmannasser512@gmail.com" class="email-link">Email: abdelrahmannasser512@gmail.com</a></p>
+    <button class="reveal-contacts" id="revealContacts">Reveal Contacts</button>
+    <div class="contacts" id="contacts"></div>
+    <p class="error-message" id="errorMessage">Incorrect password. Please try again.</p>
     <p>For brand verification, the photo should match the person wearing it & the link must start with "abdelrahmannasser512.github.io"</p>
     <p id="scanStatus"></p>
   </div>
+  <script>
+    // Obfuscated password generation
+    const getPassword = () => {
+      const parts = ['Up', 'nor', 'mal', '20', '25'];
+      return parts.join('');
+    };
+    const correctPassword = getPassword(); // Generates 'Upnormal2025'
+
+    // Obfuscated contact data
+    const contactData = {
+      e1: 'abdel',
+      e2: 'rahman',
+      e3: 'nasser',
+      e4: '512',
+      e5: 'gmail.com',
+      w1: '+201',
+      w2: '015',
+      w3: '264468'
+    };
+    const getEmail = () => `${contactData.e1}${contactData.e2}${contactData.e3}${contactData.e4}@${contactData.e5}`;
+    const getWhatsApp = () => `${contactData.w1}${contactData.w2}${contactData.w3}`;
+
+    const revealButton = document.getElementById('revealContacts');
+    const contactsDiv = document.getElementById('contacts');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Check if contacts are already revealed in this session
+    if (sessionStorage.getItem('contactsRevealed') === 'true') {
+      contactsDiv.innerHTML = `
+        <p><a href="mailto:${getEmail()}" class="email-link">Email: ${getEmail()}</a></p>
+        <p><a href="https://wa.me/${getWhatsApp()}" class="whatsapp-link">WhatsApp: ${getWhatsApp()}</a></p>
+      `;
+      contactsDiv.style.display = 'block';
+      revealButton.style.display = 'none';
+      errorMessage.style.display = 'none';
+    }
+
+    revealButton.addEventListener('click', () => {
+      if (sessionStorage.getItem('contactsRevealed') !== 'true') {
+        const enteredPassword = prompt('Please enter the password to view contact information:');
+        if (enteredPassword === correctPassword) {
+          sessionStorage.setItem('contactsRevealed', 'true');
+          contactsDiv.innerHTML = `
+            <p><a href="mailto:${getEmail()}" class="email-link">Email: ${getEmail()}</a></p>
+            <p><a href="https://wa.me/${getWhatsApp()}" class="whatsapp-link">WhatsApp: ${getWhatsApp()}</a></p>
+          `;
+          contactsDiv.style.display = 'block';
+          revealButton.style.display = 'none';
+          errorMessage.style.display = 'none';
+        } else {
+          errorMessage.style.display = 'block';
+        }
+      }
+    });
+  </script>
 </body>
 </html>
